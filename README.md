@@ -143,6 +143,9 @@ Pipeline
 Diagrama de flujo
 ![texto alternativo](./devsu-demo-devops-nodejs.drawio-Página-2.jpg)
 
+## Despliegue en docker desktop de la imagen
+
+![texto alternativo](./Dockerfile-Image)
 
 ## Url pública
 https://devsu-demo-devops-nodejs.onrender.com
