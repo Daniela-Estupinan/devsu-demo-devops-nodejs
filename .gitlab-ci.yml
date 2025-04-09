@@ -1,0 +1,116 @@
+stages:
+  - docker
+  - build
+  - test
+  - analyze
+  - k8s
+  - deploy
+variables:
+  DOCKER_IMAGE: registry.gitlab.com/daniela-estupinan/devsu-demo-devops-nodejs
+
+docker_build_push:
+  stage: docker
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - docker build -t $DOCKER_IMAGE:latest .
+    - echo $CI_JOB_TOKEN | docker login -u gitlab-ci-token --password-stdin registry.gitlab.com
+    - docker push $DOCKER_IMAGE:latest
+
+#1. Build
+build:
+    stage: build
+    image: $DOCKER_IMAGE
+    script:
+      - npm install
+    artifacts:
+      paths:
+        - node_modules/
+      expire_in: 1 hour
+
+#2. Test
+unit_test:
+  stage: test
+  image: $DOCKER_IMAGE
+  script:
+    - npm install
+    - npm run test -- --json --output-file-path unit_test/report.json || true
+  artifacts:
+    paths:
+      - unit_test/report.json
+
+#3. Static Analysis
+static_analysis:
+  stage: analyze
+  image: $DOCKER_IMAGE
+  script:
+    - npm install -g prettier 
+    - prettier --check . > static_analysis/prettier-report.txt || true
+  artifacts:
+    paths:
+      - static_analysis/prettier-report.txt
+
+#4. Coverage
+code_coverage:
+  stage: analyze
+  image: $DOCKER_IMAGE
+  script:
+    - npm install
+    - npm run test -- --coverage || true
+  artifacts:
+    paths:
+      - coverage/
+
+#5. Vulnerability Scan
+vulnerability_scan:
+  stage: analyze
+  image: $DOCKER_IMAGE
+  script:
+    - npm audit --audit-level=low || true
+
+
+#6 Docker Build (tagged version)
+docker_build_tagged:
+  stage: docker
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - docker build -t $DOCKER_IMAGE:$CI_COMMIT_TAG .
+    - echo $CI_JOB_TOKEN | docker login -u gitlab-ci-token --password-stdin registry.gitlab.com
+    - docker push $DOCKER_IMAGE:$CI_COMMIT_TAG
+  only:
+    - tags
+
+#8. Kubernetes deploy
+k8s_deploy_local:
+  stage: k8s
+  script:
+    - echo "Este job es solo de referencia de que se desplego en Docket Desktop de manera local"
+
+#8. Kubernetes deploy
+k8s_deploy:
+  stage: k8s
+  image: bitnami/kubectl:1.27.4-debian-11-r0
+  script:
+    - kubectl apply -f k8s/configmap.yaml || true
+    - kubectl apply -f k8s/secret.yaml || true
+    - kubectl apply -f k8s/deployment.yaml
+    - kubectl apply -f k8s/service.yaml
+    - kubectl apply -f k8s/ingress.yaml
+  only:
+    - local
+
+#9 Render Deploy (url publica)
+render_deploy:
+  stage: deploy
+  image: curlimages/curl:latest
+  script:
+    - curl -X POST https://api.render.com/deploy/srv-cvr4usggjchc73bnkd3g?key=xaxb7cweO8I
+
+
+
+
+
+
