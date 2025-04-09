@@ -145,7 +145,7 @@ Diagrama de flujo
 
 ## Despliegue en docker desktop de la imagen
 
-![texto alternativo](./Dockerfile-Image)
+![texto alternativo](./Dockerfile-Image.png)
 
 ## Url pública
 https://devsu-demo-devops-nodejs.onrender.com
