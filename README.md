@@ -136,6 +136,24 @@ If the response is unsuccessful, we will receive status 400 and the following me
     ]
 }
 ```
+## Diagramas 
+Pipeline
+![texto alternativo](./devsu-demo-devops-nodejs.drawio.jpg)
+
+Diagrama de flujo
+![texto alternativo](./devsu-demo-devops-nodejs.drawio-Página-2.jpg)
+
+
+## Url pública
+https://devsu-demo-devops-nodejs.onrender.com
+
+## Despliegue en docker desktop kubernetes 
+
+![texto alternativo](./Kubernetes-DockerDesktop.png)
+
+## Código en Gitlab 
+
+https://gitlab.com/Daniela-Estupinan/devsu-demo-devops-nodejs
 
 ## License
 

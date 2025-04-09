@@ -1,6 +1,7 @@
 import { app, server } from '.'
 import request from 'supertest'
 import User from './users/model.js'
+~/users/model.js
 import sequelize from './shared/database/database'
 import { Sequelize } from 'sequelize'
 
